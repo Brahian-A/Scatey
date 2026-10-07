@@ -5,5 +5,5 @@ export const jornalesManifest: ModuleManifest = {
   label: "Jornales",
   href: "/jornales",
   icon: "CalendarDays",
-  order: 10,
+  order: 1,
 };

@@ -1,6 +1,6 @@
 # Scatey — gestión interna
 
-Aplicación interna para la empresa: personal, obras y (próximamente) jornales, órdenes de compra, stock y coordinación.
+Aplicación interna para la empresa: jornales, personal, obras y (próximamente) órdenes de compra, stock y coordinación.
 Funciona **en una sola PC**, con la base de datos guardada en un archivo local (`data/app.db`). No necesita internet para funcionar.
 
 ## 1. Instalar Node.js (una sola vez)
@@ -141,6 +141,7 @@ src/
 **Reglas:**
 
 - Un módulo nunca importa archivos internos de otro módulo; solo su `queries.ts` o `actions.ts`.
+  Excepción: un `schema.ts` puede importar tablas de otro módulo para declarar claves foráneas; para joins se usa `@/core/db/schema`.
 - Las páginas no tienen lógica: la lógica vive en el módulo.
 - Claves primarias: UUID en texto. Todas las tablas tienen `created_at` / `updated_at`.
 - Nada se borra: trabajadores se desactivan, obras se marcan como terminadas.
