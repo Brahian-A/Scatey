@@ -14,6 +14,7 @@ import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/popover"
 import { cn } from "@/lib/utils";
 import { borrarJornales, guardarJornales } from "../actions";
 import { diaMes, nombreDia } from "../fechas";
+import { formatearJornales } from "../formato";
 import type { GrillaSemana, ObraResumen } from "../queries";
 import { ETIQUETA_MOTIVO } from "../schema";
 import { claveCelda, jornalInput, type Celda, type Jornal } from "../validation";
@@ -36,8 +37,6 @@ function conValor(celda: Celda, previo: Jornal | undefined, valor: ValorCelda): 
     ? { ...base, estado: "trabajo", obraId: valor.obraId, motivoAusencia: null }
     : { ...base, estado: "ausente", obraId: null, motivoAusencia: valor.motivoAusencia };
 }
-
-const formatoJornales = new Intl.NumberFormat("es-UY", { maximumFractionDigits: 1 });
 
 export function GrillaSemanal({
   grilla,
@@ -382,7 +381,7 @@ export function GrillaSemanal({
                       total === 0 && "font-normal text-muted-foreground",
                     )}
                   >
-                    {formatoJornales.format(total)}
+                    {formatearJornales(total)}
                   </td>
                 </tr>
               );

@@ -10,16 +10,24 @@ export function useFiltrosUrl() {
   const searchParams = useSearchParams();
   const [pendiente, startTransition] = useTransition();
 
-  const setFiltro = useCallback(
-    (clave: string, valor: string | null) => {
+  /** Cambia varios parámetros en una sola navegación. */
+  const setFiltros = useCallback(
+    (cambios: Record<string, string | null>) => {
       const params = new URLSearchParams(searchParams);
-      if (valor === null) params.delete(clave);
-      else params.set(clave, valor);
+      for (const [clave, valor] of Object.entries(cambios)) {
+        if (valor === null) params.delete(clave);
+        else params.set(clave, valor);
+      }
       const qs = params.toString();
       startTransition(() => router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false }));
     },
     [router, pathname, searchParams],
   );
 
-  return { setFiltro, pendiente };
+  const setFiltro = useCallback(
+    (clave: string, valor: string | null) => setFiltros({ [clave]: valor }),
+    [setFiltros],
+  );
+
+  return { setFiltro, setFiltros, pendiente };
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Copy } from "lucide-react";
+import { ChevronLeft, ChevronRight, Copy, FileSpreadsheet } from "lucide-react";
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -24,11 +24,14 @@ import { diaMes, lunesDe, nombreDia, sumarDias } from "../fechas";
 import { jornalesManifest } from "../manifest";
 import type { GrillaSemana } from "../queries";
 import { GrillaSemanal } from "./GrillaSemanal";
+import { JornalesTabs } from "./JornalesTabs";
 import { useMostrarSabado } from "./useMostrarSabado";
 
 type AccionCopia = (sobrescribir?: boolean) => Promise<ResultadoAccion<ResultadoCopia>>;
 
 const hrefSemana = (semana: string) => `${jornalesManifest.href}?semana=${semana}`;
+const hrefReportes = (semana: string) =>
+  `${jornalesManifest.href}/reportes?desde=${semana}&hasta=${sumarDias(semana, 6)}`;
 
 export function JornalesView({ grilla, hoy }: { grilla: GrillaSemana; hoy: string }) {
   const { semana } = grilla;
@@ -89,6 +92,8 @@ export function JornalesView({ grilla, hoy }: { grilla: GrillaSemana; hoy: strin
         }
       />
 
+      <JornalesTabs actual="semana" hrefSemana={hrefSemana(semana)} hrefReportes={hrefReportes(semana)} />
+
       <nav aria-label="Semanas" className="mb-3 flex flex-wrap items-center gap-2">
         <Button variant="outline" size="icon" asChild>
           <Link href={hrefSemana(sumarDias(semana, -7))} aria-label="Semana anterior">
@@ -108,6 +113,11 @@ export function JornalesView({ grilla, hoy }: { grilla: GrillaSemana; hoy: strin
         <h2 className="ml-2 text-base font-medium">
           Semana del {diaMes(dias[0]!)} al {diaMes(dias.at(-1)!)}
         </h2>
+        <Button variant="outline" className="ml-auto" asChild>
+          <a href={`${jornalesManifest.href}/exportar?semana=${semana}${mostrarSabado ? "&sabado=1" : ""}`} download>
+            <FileSpreadsheet /> Exportar semana
+          </a>
+        </Button>
       </nav>
 
       <GrillaSemanal
