@@ -59,3 +59,35 @@ export const jornales = sqliteTable(
     check("jornales_fecha_check", sql`${t.fecha} GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'`),
   ],
 );
+
+// ── Importación de planillas viejas ──────────────────────────────────────────
+
+export const TIPOS_ALIAS = ["trabajador", "destino"] as const;
+export type TipoAlias = (typeof TIPOS_ALIAS)[number];
+
+/**
+ * Cómo se resolvió cada texto de la planilla vieja, para que la próxima
+ * importación del mismo archivo no vuelva a preguntar.
+ * - trabajador: `target_id` = trabajador, o todo null = ignorar.
+ * - destino: `target_id` = obra, `motivo` = ausencia, o todo null = ignorar.
+ * `target_id` no tiene FK porque apunta a trabajadores u obras según `tipo`.
+ */
+export const importAliases = sqliteTable(
+  "import_aliases",
+  {
+    id: id(),
+    tipo: text("tipo", { enum: TIPOS_ALIAS }).notNull(),
+    /** Texto normalizado (sin acentos, mayúsculas, espacios simples): la clave de búsqueda. */
+    clave: text("clave").notNull(),
+    /** El texto tal como apareció en la planilla (la primera variante vista). */
+    textoOriginal: text("texto_original").notNull(),
+    targetId: text("target_id"),
+    motivo: text("motivo", { enum: VALORES_MOTIVO }),
+    ...timestamps,
+  },
+  (t) => [
+    uniqueIndex("import_aliases_tipo_clave_uq").on(t.tipo, t.clave),
+    check("import_aliases_destino_check", sql`${t.targetId} IS NULL OR ${t.motivo} IS NULL`),
+    check("import_aliases_motivo_check", sql`${t.tipo} = 'destino' OR ${t.motivo} IS NULL`),
+  ],
+);

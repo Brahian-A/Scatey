@@ -15,6 +15,13 @@
       "when": 1791381636930,
       "tag": "0001_jornales",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1791383416662,
+      "tag": "0002_import_aliases",
+      "breakpoints": true
     }
   ]
 }

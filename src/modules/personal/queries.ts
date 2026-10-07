@@ -5,6 +5,7 @@ import { trabajadores } from "./schema";
 
 export type Trabajador = typeof trabajadores.$inferSelect;
 export { nombreCompleto } from "./format";
+export { trabajadorInput } from "./validation";
 
 /** Por defecto solo devuelve trabajadores activos, en el orden definido. */
 export async function listarTrabajadores(opciones: { incluirInactivos?: boolean } = {}): Promise<Trabajador[]> {

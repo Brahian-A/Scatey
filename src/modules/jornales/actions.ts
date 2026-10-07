@@ -1,7 +1,6 @@
 "use server";
 
-import { and, eq, gte, inArray, lt, max, or, sql } from "drizzle-orm";
-import type { SQLiteColumn } from "drizzle-orm/sqlite-core";
+import { and, eq, gte, inArray, lt, max, or } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/core/db/client";
@@ -10,7 +9,18 @@ import { falla, ok, type ResultadoAccion } from "@/core/lib/acciones";
 import { lunesDe, sumarDias } from "./fechas";
 import { jornalesManifest } from "./manifest";
 import { jornales } from "./schema";
-import { celdaInput, claveCelda, fechaInput, jornalInput, MAX_CELDAS, type Celda, type Jornal, type JornalInput } from "./validation";
+import { upsert } from "./upsert";
+import {
+  celdaInput,
+  claveCelda,
+  fechaInput,
+  jornalInput,
+  MAX_CELDAS,
+  mismoValor,
+  type Celda,
+  type Jornal,
+  type JornalInput,
+} from "./validation";
 
 function revalidar() {
   revalidatePath(jornalesManifest.href);
@@ -18,26 +28,6 @@ function revalidar() {
 
 function primerError(error: z.ZodError): string {
   return error.issues[0]?.message ?? "Datos inválidos.";
-}
-
-const excluido = (col: SQLiteColumn) => sql.raw(`excluded.${col.name}`);
-
-/** Upsert sobre (fecha, trabajador_id): una sola sentencia, atómica. */
-function upsert(ejecutor: Pick<typeof db, "insert">, registros: Jornal[]) {
-  return ejecutor
-    .insert(jornales)
-    .values(registros)
-    .onConflictDoUpdate({
-      target: [jornales.fecha, jornales.trabajadorId],
-      set: {
-        estado: excluido(jornales.estado),
-        obraId: excluido(jornales.obraId),
-        motivoAusencia: excluido(jornales.motivoAusencia),
-        fraccion: excluido(jornales.fraccion),
-        nota: excluido(jornales.nota),
-        updatedAt: excluido(jornales.updatedAt),
-      },
-    });
 }
 
 function sinRepetidos(celdas: Celda[]): boolean {
@@ -77,12 +67,6 @@ export async function borrarJornales(input: Celda[]): Promise<ResultadoAccion> {
 export type ResultadoCopia =
   | { estado: "confirmar"; conflictos: number }
   | { estado: "listo"; copiados: number; desde?: string };
-
-type ValorCopiado = Pick<Jornal, "estado" | "obraId" | "motivoAusencia" | "fraccion">;
-
-function mismoValor(a: ValorCopiado, b: ValorCopiado): boolean {
-  return a.estado === b.estado && a.obraId === b.obraId && a.motivoAusencia === b.motivoAusencia && a.fraccion === b.fraccion;
-}
 
 /**
  * Copia los jornales de cada día `desde` a su día `hacia`. Solo copia trabajadores

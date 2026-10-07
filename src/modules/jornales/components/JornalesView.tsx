@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Copy, FileSpreadsheet } from "lucide-react";
+import { ChevronLeft, ChevronRight, Copy, FileSpreadsheet, Upload } from "lucide-react";
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -87,6 +87,11 @@ export function JornalesView({ grilla, hoy }: { grilla: GrillaSemana; hoy: strin
               onClick={() => copiar((sobrescribir) => copiarSemanaAnterior(semana, sobrescribir))}
             >
               <Copy /> Copiar semana anterior
+            </Button>
+            <Button variant="outline" asChild>
+              <Link href={`${jornalesManifest.href}/importar`}>
+                <Upload /> Importar planilla
+              </Link>
             </Button>
           </>
         }

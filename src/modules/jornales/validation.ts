@@ -47,6 +47,13 @@ export function claveCelda(c: Celda): string {
   return `${c.fecha}|${c.trabajadorId}`;
 }
 
+type ValorJornal = Pick<Jornal, "estado" | "obraId" | "motivoAusencia" | "fraccion">;
+
+/** Mismo contenido de celda (la nota no cuenta). */
+export function mismoValor(a: ValorJornal, b: ValorJornal): boolean {
+  return a.estado === b.estado && a.obraId === b.obraId && a.motivoAusencia === b.motivoAusencia && a.fraccion === b.fraccion;
+}
+
 // ── Reportes ─────────────────────────────────────────────────────────────────
 
 export const VISTAS_REPORTE = ["trabajador", "obra", "detalle"] as const;

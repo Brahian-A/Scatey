@@ -6,7 +6,8 @@ import { filtrosObras, type FiltrosObras } from "./validation";
 
 export type Obra = typeof obras.$inferSelect;
 export type { FiltrosObras } from "./validation";
-export { ETIQUETA_ESTADO, ETIQUETA_TIPO, PALETA_OBRAS } from "./constants";
+export { ETIQUETA_ESTADO, ETIQUETA_TIPO, PALETA_OBRAS, TIPOS_OBRA, type TipoObra } from "./constants";
+export { obraInput } from "./validation";
 
 /** Convierte la query string en filtros válidos (por defecto: obras activas de cualquier tipo). */
 export function parsearFiltrosObras(params: Record<string, string | string[] | undefined>): FiltrosObras {
